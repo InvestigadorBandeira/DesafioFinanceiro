@@ -1,0 +1,37 @@
+/*
+	Desafio financeiro:
+	LISTAGEM DE SALDO DE CONTAS POR DIA
+	
+	Implementar um sistema simples no qual você dará entrada/saída de valores, com  data,
+	e LISTAR O SALDO DA CONTA POR DIA.
+	
+	O sistema não deve utilizar o JDBC para persistência, como também nada de banco de 
+	dados (JPA+MySQL por exemplo). Pode persistir em arquivo ou xml.
+	
+	Para classes de representação de datas E valores, deve ser utilizado as classes Calendar
+	e BigDecimal respectivamente.
+	
+	Pode usar bibliotecas de terceiros (JodaTime e XStream por exemplo).
+	
+	As view's serão pensadas depois que as regras de negócio estiverem funcionando corretamente.
+
+*/
+
+// Classes Principais (Model's)
+public class Conta{
+	private String nome;
+	private List<Lancamento> lancamentos;
+	// getter's and setter's
+}
+
+public class Lancamento{
+	private Calendar data;
+	private TipoLancamento tipo;
+	private BigDecimal valor;
+	// getter's and setter's
+}
+
+public Enum TipoLancamento{
+	ENTRADA,
+	SAIDA
+}
