@@ -10,6 +10,9 @@ import br.com.desafio.financeirovn.dao.LancamentoDAO;
 import br.com.desafio.financeirovn.model.Conta;
 import br.com.desafio.financeirovn.model.Lancamento;
 import br.com.desafio.financeirovn.model.TipoLancamento;
+import br.com.desafio.financeirovn.util.Formatar;
+import br.com.desafio.financeirovn.util.csv.ContaCSVReader;
+import br.com.desafio.financeirovn.util.csv.LancamentoCSVReader;
 
 public class Main {
 
@@ -18,8 +21,41 @@ public class Main {
 
 	criaContas();
 	criaLancamentos();
+	CarregarCSV();
 
 	System.out.println("\nFinalizando sistema.");
+    }
+
+    private static void CarregarCSV() {
+	try {
+	    List<Conta> contas = new ContaCSVReader("", "contas").getDados();
+
+	    for (Conta c : contas)
+		c.setLancamentos(new LancamentoCSVReader("201506", c.getNome())
+			.getDados());
+
+	    contas.forEach(conta -> System.out.println(print(conta)));
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private static String print(Object dado) {
+	StringBuilder texto = new StringBuilder("");
+
+	if (dado instanceof Conta) {
+	    Conta c = (Conta) dado;
+	    texto.append(c.getNome() + "\n");
+	    for (Lancamento lan : c.getLancamentos())
+		texto.append("  " + print(lan) + "\n");
+	} else {
+	    Lancamento l = (Lancamento) dado;
+	    texto.append(Formatar.dataTexto(l.getData()) + "  ");
+	    texto.append(l.getTipo() + "  ");
+	    texto.append(Formatar.valorTexto(l.getValor()));
+	}
+	return texto.toString();
     }
 
     private static void criaLancamentos() {
