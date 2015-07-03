@@ -5,7 +5,7 @@ import br.com.desafio.financeirovn.model.Conta;
 
 public class ContaCSVReader extends CSVReader<Conta> {
 
-    public ContaCSVReader(String periodo, String arquivo) throws Exception {
+    public ContaCSVReader(String periodo, String arquivo) {
 	super("", arquivo);
     }
 

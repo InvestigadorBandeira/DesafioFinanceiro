@@ -1,45 +1,47 @@
 package br.com.desafio.financeirovn.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import br.com.desafio.financeirovn.dao.xml.XmlDAO;
+import br.com.desafio.financeirovn.exception.FinanceiroException;
+import br.com.desafio.financeirovn.util.csv.CSVReader;
+import br.com.desafio.financeirovn.util.csv.CSVWriter;
 
-public abstract class AbstractDAO<T> {
+public abstract class AbstractDAO<T> implements DAO<T> {
 
+    protected CSVReader<T> reader;
+    protected CSVWriter<T> writer;
+    protected String periodo;
+    protected String arquivo;
     protected List<T> dados;
-    protected XmlDAO dao;
 
-    public AbstractDAO(Object classe, String database) {
-	dao = new XmlDAO(classe, database);
-	setDados();
+    public AbstractDAO(String periodo, String arquivo) {
+	this.periodo = periodo;
+	this.arquivo = arquivo;
     }
 
-    // apenas pra atualizar
-    protected abstract void setDados();
-
+    @Override
     public List<T> getDados() {
+	if (dados == null)
+	    try {
+		dados = reader.getDados();
+	    } catch (FinanceiroException e) {
+		dados = new ArrayList<>();
+	    }
+
 	return dados;
     }
 
-    public void salvar(T t) {
-	dados.add(t);
-	persistir();
+    @Override
+    public void salvar() {
+	try {
+	    writer.salvarDados(dados);
+	    configurar();
+	} catch (FinanceiroException e) {
+	    e.printStackTrace();
+	}
     }
 
-    public void excluir(T t) {
-	dados.remove(t);
-	persistir();
-    }
+    protected abstract void configurar();
 
-    protected void persistir() {
-	dao.salvar();
-	setDados();
-    }
-
-    public boolean existe(T t) {
-	if (dados.contains(t))
-	    return true;
-
-	return false;
-    }
 }

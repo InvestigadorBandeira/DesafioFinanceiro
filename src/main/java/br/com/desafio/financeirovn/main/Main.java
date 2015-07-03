@@ -5,40 +5,53 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import br.com.desafio.financeirovn.dao.ContaDAO;
-import br.com.desafio.financeirovn.dao.LancamentoDAO;
 import br.com.desafio.financeirovn.model.Conta;
 import br.com.desafio.financeirovn.model.Lancamento;
 import br.com.desafio.financeirovn.model.TipoLancamento;
+import br.com.desafio.financeirovn.repository.Contas;
+import br.com.desafio.financeirovn.repository.Lancamentos;
 import br.com.desafio.financeirovn.util.Formatar;
-import br.com.desafio.financeirovn.util.csv.ContaCSVReader;
-import br.com.desafio.financeirovn.util.csv.LancamentoCSVReader;
 
 public class Main {
 
     public static void main(String[] args) {
 	System.out.println("Iniciando sistema.\n");
 
-	criaContas();
-	criaLancamentos();
+	salvarCSV();
 	CarregarCSV();
 
 	System.out.println("\nFinalizando sistema.");
     }
 
-    private static void CarregarCSV() {
-	try {
-	    List<Conta> contas = new ContaCSVReader("", "contas").getDados();
+    private static void salvarCSV() {
+	Conta nova = new Conta();
+	nova.setNome("Santander Brasil");
 
-	    for (Conta c : contas)
-		c.setLancamentos(new LancamentoCSVReader("201506", c.getNome())
-			.getDados());
+	List<Lancamento> lan = new ArrayList<>();
 
-	    contas.forEach(conta -> System.out.println(print(conta)));
-
-	} catch (Exception e) {
-	    e.printStackTrace();
+	for (int i = 0; i < 5; i++) {
+	    Lancamento l = new Lancamento();
+	    l.setData(Calendar.getInstance());
+	    l.setTipo(TipoLancamento.ENTRADA);
+	    l.setValor(new BigDecimal("100.85"));
+	    lan.add(l);
 	}
+	nova.setLancamentos(lan);
+
+	// new Contas().salvar(nova);
+	// new Lancamentos().salvarTodos(lan, nova);
+    }
+
+    private static void CarregarCSV() {
+	List<Conta> contas = new Contas().buscaTodos();
+
+	Calendar mes = Calendar.getInstance();
+	mes.add(Calendar.MONTH, 0);
+
+	for (Conta c : contas)
+	    c.setLancamentos(new Lancamentos().buscaPorMes(mes, c));
+
+	contas.forEach(conta -> System.out.println(print(conta)));
     }
 
     private static String print(Object dado) {
@@ -58,29 +71,4 @@ public class Main {
 	return texto.toString();
     }
 
-    private static void criaLancamentos() {
-	ContaDAO dao = new ContaDAO();
-	LancamentoDAO ldao = new LancamentoDAO();
-
-	List<Lancamento> lancamentos = new ArrayList<>();
-
-	for (int i = 0; i < 5; i++) {
-	    Lancamento l = new Lancamento();
-	    l.setData(Calendar.getInstance());
-	    l.setTipo(TipoLancamento.ENTRADA);
-	    l.setValor(new BigDecimal("100.0"));
-	    lancamentos.add(l);
-	}
-
-	Conta conta = new Conta();
-	conta.setNome(dao.getDados().get(0));
-	conta.setLancamentos(lancamentos);
-	// ldao.salvar(conta);
-    }
-
-    private static void criaContas() {
-	ContaDAO dao = new ContaDAO();
-	// dao.salvar("Caixa Fixo");
-	// dao.salvar("Banco do Brasil");
-    }
 }

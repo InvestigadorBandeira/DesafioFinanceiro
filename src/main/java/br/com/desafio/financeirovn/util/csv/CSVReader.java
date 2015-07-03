@@ -15,11 +15,9 @@ public abstract class CSVReader<T> {
     protected int numeroLinha = 0;
     protected List<T> dados = new ArrayList<>();
 
-    public CSVReader(String periodo, String arquivo) throws Exception {
+    public CSVReader(String periodo, String arquivo) {
 	this.FILE = "database/" + periodo + formataNomeArquivo(arquivo)
 		+ ".csv";
-
-	carregarDados();
     }
 
     private String formataNomeArquivo(String nomeArquivo) {
@@ -43,15 +41,15 @@ public abstract class CSVReader<T> {
 	    }
 	    arquivo.close();
 	} catch (IOException e) {
-	    throw new FinanceiroException(e);
+	    throw new FinanceiroException("Erro ao carregar o arquivo: " + FILE);
 	}
-
     }
 
     protected abstract void processaLinha(String linha)
 	    throws FinanceiroException;
 
-    public List<T> getDados() {
+    public List<T> getDados() throws FinanceiroException {
+	carregarDados();
 	return dados;
     }
 }

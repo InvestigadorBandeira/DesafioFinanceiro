@@ -10,7 +10,7 @@ import br.com.desafio.financeirovn.util.Formatar;
 
 public class LancamentoCSVReader extends CSVReader<Lancamento> {
 
-    public LancamentoCSVReader(String periodo, String arquivo) throws Exception {
+    public LancamentoCSVReader(String periodo, String arquivo) {
 	super(periodo, arquivo);
     }
 
